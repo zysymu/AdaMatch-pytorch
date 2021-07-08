@@ -15,7 +15,7 @@ For this implementation I train a ResNet18 from scratch and apply it to a MNIST 
 - Accuracy on source dataset = _0.9645_ 
 - Accuracy on target dataset = _0.9217_ 
 
-The training metrics (test set accuracy accuracy) and confusion matrix (target test set) are, respectivelly:
+The training metrics (test set accuracy) and confusion matrix (target test set) are, respectivelly:
 <img src="fig_metrics.png" alt="Training metrics"/>
 <img src="fig_cm.png" alt="Confusion matrix" width="200"/>
 
