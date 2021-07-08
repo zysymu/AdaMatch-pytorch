@@ -11,9 +11,13 @@ python run.py
 
 But, note that this implementation is to be used more as a starting point, and you'll have to dig a little deeper on the python code in order to change hyperparameters, transforms and the data that is being loaded.
 
-Running the the code as implemented here achieves the following results: accuracy on source dataset = 0.9645; accuracy on target dataset: 0.9217737917289487. The training metrics (accuracy considered over the test set) and confusion matrix (on the test set) are, respectivelly:
-![Training metrics](fig_metrics.png)
-![Confusion matrix](fig_cm.png)
+Running the the code as implemented here achieves the following results: 
+- Accuracy on source dataset = _0.9645_ 
+- Accuracy on target dataset = _0.9217_ 
+
+The training metrics (accuracy considered over the test set) and confusion matrix (on the test set) are, respectivelly:
+<img src="fig_metrics.png" alt="Training metrics"/>
+<img src="fig_cm.png" alt="Confusion matrix" width="200"/>
 
 ## What's the difference from the TensorFlow implementation?
 There are some very important differences:
