@@ -11,6 +11,10 @@ python run.py
 
 But, note that this implementation is to be used more as a starting point, and you'll have to dig a little deeper on the python code in order to change hyperparameters, transforms and the data that is being loaded.
 
+Running the the code as implemented here achieves the following results: accuracy on source dataset = 0.9645; accuracy on target dataset: 0.9217737917289487. The training metrics (accuracy considered over the test set) and confusion matrix (on the test set) are, respectivelly:
+![Training metrics](fig_metrics.png)
+![Confusion matrix](fig_cm.png)
+
 ## What's the difference from the TensorFlow implementation?
 There are some very important differences:
 1. I don't use RandAugment for the strong augmentations. The main reason is because I couldn't get available RandAugment PyTorch implementations to work with my data. Also, from what I've seen, current RandAugment implementations use `PIL` for most transforms, which could end up in information loss if you're working with certain delicate images (exactly the domain that I plan to use AdaMatch on). To compensate for it I did some DIY transforms that are very hacky, but seem to get the job done.
