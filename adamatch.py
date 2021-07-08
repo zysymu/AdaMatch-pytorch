@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
+from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts, StepLR
 from sklearn.metrics import accuracy_score
 import numpy as np
 import os
@@ -12,8 +12,8 @@ def train(classifier,
           source_dataloader_weak, source_dataloader_strong, target_dataloader_weak, target_dataloader_strong,
           test_source_dataloader, test_target_dataloader,
           epochs, device, n_classes, checkpoint_path, save_path):
-    # configure hyperparameters
-    lr = 3e-3 # original lr = 3e-2
+    # configure hyperparameters (according to the paper)
+    lr = 3e-3 # original: lr = 3e-2
     weight_decay = 5e-4
     tau = 0.9
     
@@ -28,7 +28,8 @@ def train(classifier,
     # train with checkpoints: allows training for much longer even with runtime disconnects
     if not os.path.isfile(checkpoint_path): # if checkpoint doesn't exist
         optimizer = optim.Adam(list(classifier.parameters()), lr=lr, weight_decay=weight_decay)
-        scheduler = CosineAnnealingWarmRestarts(optimizer, total_steps, eta_min=lr*0.25)
+        #scheduler = CosineAnnealingWarmRestarts(optimizer, total_steps, eta_min=lr*0.25)
+        scheduler = StepLR(optimizer, step_size=15, gamma=0.1)
 
         start_epoch = 0
         current_step = 0
@@ -42,7 +43,8 @@ def train(classifier,
         optimizer = optim.Adam(list(classifier.parameters()), lr=lr, weight_decay=weight_decay)
         optimizer.load_state_dict(checkpoint['optimizer_weights'])
 
-        scheduler = CosineAnnealingWarmRestarts(optimizer, total_steps, eta_min=lr*0.25)
+        #scheduler = CosineAnnealingWarmRestarts(optimizer, total_steps, eta_min=lr*0.25)
+        scheduler = StepLR(optimizer, step_size=15, gamma=0.1)
         scheduler.load_state_dict(checkpoint['scheduler_weights'])
 
         start_epoch = checkpoint['epoch'] + 1
@@ -99,7 +101,7 @@ def train(classifier,
 
             ## softmax for logits of weakly augmented target images
             logits_target = logits_combined[source_total:]
-            logits_target_weak = logits_target[:data_source_weak.size(0)]
+            logits_target_weak = logits_target[:data_target_weak.size(0)]
             pseudolabels_target = F.softmax(logits_target_weak, 0)
 
             ## allign target label distribtion to source label distribution
@@ -119,14 +121,13 @@ def train(classifier,
             # compute loss
             source_loss = compute_source_loss(logits_source_weak, final_logits_source[data_source_weak.size(0):], labels_source)
             
-            #???????????????????????? check : on logits_target
             final_pseudolabels = torch.max(final_pseudolabels,1)[1]
-            target_loss = compute_target_loss(final_pseudolabels.long(), logits_target[:data_source_weak.size(0)], mask)
+            target_loss = compute_target_loss(final_pseudolabels.long(), logits_target[data_target_weak.size(0):], mask)
 
             ## compute target loss weight (mu)
             pi = torch.tensor(np.pi, dtype=torch.float).to(device)
             step = torch.tensor(current_step, dtype=torch.float).to(device)
-            mu = 0.5 - torch.cos(torch.minimum(pi, (2*pi*step) /total_steps)) / 2
+            mu = 0.5 - torch.cos(torch.minimum(pi, (2*pi*step) / total_steps)) / 2
 
             ## get total loss
             loss = source_loss + (mu * target_loss)
@@ -139,8 +140,8 @@ def train(classifier,
             # metrics
             running_loss += loss.item()
 
-            # scheduler step
-            scheduler.step()
+            # cosine scheduler step
+            #scheduler.step()
 
         # get losses
         # we use np.min because zip only goes up to the smallest list length
@@ -153,6 +154,9 @@ def train(classifier,
         epoch_accuracy_target = evaluate(classifier, test_target_dataloader, device)
         history['accuracy_source'].append(epoch_accuracy_source)
         history['accuracy_target'].append(epoch_accuracy_target)
+
+        # steplr scheduler step
+        scheduler.step()
 
         # save checkpoint
         torch.save({'classifier_weights': classifier.state_dict(),
@@ -198,7 +202,7 @@ def evaluate(classifier, dataloader, device, return_lists_roc=False):
         outputs_list = np.concatenate(outputs_list)
         preds_list = np.concatenate(preds_list)
 
-    # metri
+    # metrics
     accuracy = accuracy_score(labels_list, preds_list)
 
     if return_lists_roc:
