@@ -19,12 +19,12 @@ def plot_metrics(history):
     axs[1].plot(range(1, epochs+1), history['accuracy_source'])
     axs[1].set_xlabel('Epochs')
     axs[1].set_ylabel('Loss')
-    axs[1].set_title('Acuracy on weakly augmented source')
+    axs[1].set_title('Accuracy on weakly augmented source')
 
     axs[2].plot(range(1, epochs+1), history['accuracy_target'])
     axs[2].set_xlabel('Epochs')
     axs[2].set_ylabel('Counts')
-    axs[2].set_title('Acuracy on weakly augmented target')      
+    axs[2].set_title('Accuracy on weakly augmented target')      
         
     plt.show()
 

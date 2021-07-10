@@ -9,7 +9,7 @@ n_classes = 10
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # get source and target data
-data = get_dataloaders("./", batch_size_source=32, workers=0)
+data = get_dataloaders("./", batch_size_source=32, workers=2, use_randaugment=False)
 source_dataloader_train_weak, source_dataloader_train_strong, source_dataloader_test = data[0]
 target_dataloader_train_weak, target_dataloader_train_strong, target_dataloader_test = data[1]
 

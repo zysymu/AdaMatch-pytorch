@@ -29,7 +29,7 @@ def train(classifier,
     if not os.path.isfile(checkpoint_path): # if checkpoint doesn't exist
         optimizer = optim.Adam(list(classifier.parameters()), lr=lr, weight_decay=weight_decay)
         #scheduler = CosineAnnealingWarmRestarts(optimizer, total_steps, eta_min=lr*0.25)
-        scheduler = StepLR(optimizer, step_size=15, gamma=0.1)
+        scheduler = StepLR(optimizer, step_size=25, gamma=0.1)
 
         start_epoch = 0
         current_step = 0
@@ -44,7 +44,7 @@ def train(classifier,
         optimizer.load_state_dict(checkpoint['optimizer_weights'])
 
         #scheduler = CosineAnnealingWarmRestarts(optimizer, total_steps, eta_min=lr*0.25)
-        scheduler = StepLR(optimizer, step_size=15, gamma=0.1)
+        scheduler = StepLR(optimizer, step_size=25, gamma=0.1)
         scheduler.load_state_dict(checkpoint['scheduler_weights'])
 
         start_epoch = checkpoint['epoch'] + 1

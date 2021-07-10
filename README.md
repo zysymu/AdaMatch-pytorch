@@ -12,8 +12,8 @@ python run.py
 But, note that this implementation is to be used more as a starting point, and you'll have to dig a little deeper on the python code in order to change hyperparameters, transforms and the data that is being loaded.
 
 Running the the code as implemented here achieves the following results: 
-- Accuracy on source dataset = _0.9645_ 
-- Accuracy on target dataset = _0.9217_ 
+- Accuracy on source dataset = _0.9822_ 
+- Accuracy on target dataset = _0.9561_ 
 
 The training metrics (accuracy considered over the test set) and confusion matrix (on the test set) are, respectivelly:
 <img src="fig_metrics.png" alt="Training metrics"/>
@@ -21,7 +21,7 @@ The training metrics (accuracy considered over the test set) and confusion matri
 
 ## What's the difference from the TensorFlow implementation?
 There are some very important differences:
-1. I don't use RandAugment for the strong augmentations. The main reason is because I couldn't get available RandAugment PyTorch implementations to work with my data. Also, from what I've seen, current RandAugment implementations use `PIL` for most transforms, which could end up in information loss if you're working with certain delicate images (exactly the domain that I plan to use AdaMatch on). To compensate for it I did some DIY transforms that are very hacky, but seem to get the job done.
+1. While the TensorFlow implementation uses RandAugment, I don't use it as my default option. This is simply due to the fact that I didn't get the best results while doing so. Instead, I managed to get a better target accuracy by doing some DIY transforms directly on the tensors, as highlighted in `data.py`.
 2. I use a ResNet18 as my classifier. It shouldn't be too hard to use other networks though, it's juts a matter of importing another network in its place.
 3. The TensorFlow implementation uses `CosineDecay` for the learning rate scheduler. I tried replicating it in PyTorch with `CosineAnnealingWarmRestarts`, but I'm not sure if this is the way to do to it, so I settled with using a `StepLR` scheduler.
 
