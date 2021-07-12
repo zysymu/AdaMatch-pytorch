@@ -58,7 +58,7 @@ def _get_transforms(use_randaugment=False):
                                                      #transforms.RandomAutocontrast(),
                                                      transforms.GaussianBlur(kernel_size=(5, 9), sigma=(0.1, 1.)),
                                                      transforms.RandomErasing(),
-                                                     transforms.RandomAffine(degrees=10, translate=(0.2, 0.2), scale=(0.2, 1.2))
+                                                     transforms.RandomAffine(degrees=10, translate=(0.2, 0.2), scale=(0.8, 1.2))
                                                      #transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
                                                      ])
 
